@@ -84,7 +84,7 @@ fun! s:AssemblyUpdate() dict
    norm! 0
 
    if search(curaddr,'cw') <= 0
-	" unable to find current address in current Assembly buffer
+" unable to find current address in current Assembly buffer
 	" reload the buffer
 "	call Decho("unable to find current address in current Assembly buffer; reloading it")
 
@@ -3989,12 +3989,18 @@ fun! gdbmgr#GdbMgrInit(...)
   call s:GdbMgrSetupGotoMaps()
 
   " save user's options and maps
+"  call s:GdbMgrOptionSave()
+  "if a:0 > 0
+   "let curfile= expand(a:1)
+  "else
+   "let curfile= expand("%")
+  "endif
   call s:GdbMgrOptionSave()
-  if a:0 > 0
-   let curfile= expand(a:1)
-  else
-   let curfile= expand("%")
-  endif
+    if a:0 > 0
+  		let curfile= getcwd()."/".expand(a:1)
+	else
+		let curfile= expand("%:p")
+	endif
 
   " install buffer enter/leave autocmds
   au BufEnter * call s:GdbMgrRestorePosn()
@@ -4005,10 +4011,10 @@ fun! gdbmgr#GdbMgrInit(...)
   "                          :DI pgmname core...  :DI winctrl pgmname core...
   if curfile != '--attaching--'
 "   call Decho("initialization: is curfile<".curfile."> executable? ------------------")
-   if executable(substitute(curfile,'\.[^.]\+$','','')) && !isdirectory(curfile)
+   if executable(substitute(curfile,'\.[^./]\+$','','')) && !isdirectory(curfile)
     " if current file, less its suffix, is executable, assume that the "curfile" is the program to be debugged
 "    call Decho("case: curfile<".curfile."> is executable")
-    let gdbcmd= substitute(curfile,'\.[^.]\+$','','')
+    let gdbcmd= substitute(curfile,'\.[^./]\+$','','')
 "    call Decho("curfile<".curfile."> is executable, assuming its the pgm to be debugged")
    else
 "    call Decho("case: curfile<".curfile."> is not executable")
